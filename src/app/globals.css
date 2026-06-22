@@ -1,0 +1,902 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7f2e9;
+  --foreground:#b8622a;
+  --accent: #b8622a;
+  --element-selected:#b8622a;
+  --element-unselected:#b8622a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media(prefers-color-scheme: light){
+  :root{
+    --background: #f7f2e9;
+    --foreground:#b8622a;
+  }
+}
+
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Container Utama */
+.page-container {
+  min-height: 100vh;
+  background-color: #F8F5F0; /* Warna beige pastel */
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: var(--font-geist-sans), sans-serif;
+}
+
+/* Progress Bar */
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #A39B8B;
+  font-size: 12px;
+  font-weight: 500;
+}
+.step.active {
+  color: #C06B3E;
+}
+.circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #E2DDD5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+}
+.step.active .circle {
+  background-color: #C06B3E;
+  color: white;
+}
+.line {
+  width: 40px;
+  height: 1px;
+  background-color: #D3CEC4;
+  margin-bottom: 20px;
+}
+
+/* Titles */
+.title-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.step-subtitle {
+  color: #C06B3E;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+.main-title {
+  font-family: serif; /* Bisa diganti font serif spesifik jika ada */
+  font-size: 36px;
+  color: #222;
+  margin-bottom: 10px;
+}
+.desc-text {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Form Card */
+.form-card {
+  background: white;
+  width: 100%;
+  max-width: 650px;
+  padding: 30px;
+  border-radius: 12px;
+  /* Box shadow sangat halus seperti yang kita bahas sebelumnya */
+  box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.04);
+  margin-bottom: 20px;
+}
+
+/* Grid Layout untuk Input */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.input-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+.input-group input {
+  padding: 12px 15px;
+  border: 1px solid #E0DCD3;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+}
+.input-group input:focus {
+  border-color: #C06B3E;
+}
+.input-group input::placeholder {
+  color: #A39B8B;
+}
+
+/* Divider & Section */
+.divider {
+  border: none;
+  border-top: 1px solid #E0DCD3;
+  margin: 30px 0;
+}
+.section-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #8C8473;
+  letter-spacing: 1px;
+  margin-bottom: 20px;
+}
+
+/* Action Button */
+.action-container {
+  width: 100%;
+  max-width: 650px;
+}
+.btn-primary {
+  width: 100%;
+  padding: 15px;
+  background-color: #DABBA7;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+.btn-primary:hover {
+  background-color: #CFA68D;
+}
+
+/* PAGE 2*/
+/* Update status progress bar */
+.step.completed .circle {
+  background-color: #8C6A4F;
+  color: white;
+}
+.step.completed {
+  color: #8C6A4F;
+}
+
+/* --- Grid Kamar --- */
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  width: 100%;
+  max-width: 1000px;
+  margin-bottom: 40px;
+}
+
+/* --- Kartu Kamar --- */
+.room-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s;
+}
+
+.room-card:not(.occupied):hover {
+  transform: translateY(-5px);
+}
+
+/* Status Terisi (Disabled) */
+.room-card.occupied {
+  background: #EAE6DF; /* Warna beige kusam */
+  opacity: 0.8;
+}
+
+/* --- Area Gambar & Badge --- */
+.room-image-container {
+  position: relative;
+  height: 200px;
+  width: 100%;
+  background: #D3CEC4;
+}
+
+.room-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #E2DDD5;
+}
+
+.badge {
+  position: absolute;
+  top: 15px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.badge-type {
+  left: 15px;
+  background: #FFF5E1;
+  color: #A67C00;
+}
+
+.badge-status {
+  right: 15px;
+}
+
+.status-tersedia {
+  background: #E1F5E8;
+  color: #2D8A56;
+}
+
+.status-terisi {
+  background: #FFF0F0;
+  color: #D32F2F;
+}
+
+/* --- Area Konten --- */
+.room-content {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.room-name {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.room-floor {
+  font-size: 12px;
+  color: #8C8473;
+  margin: 0 0 15px 0;
+}
+
+.room-desc {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0 0 20px 0;
+  flex-grow: 1;
+}
+
+/* --- Footer Kartu (Harga & Tombol) --- */
+.room-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.price-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.price-label {
+  font-size: 11px;
+  color: #8C8473;
+  margin-bottom: 2px;
+}
+
+.price-value {
+  font-size: 16px;
+  font-weight: bold;
+  color: #C06B3E;
+}
+
+.btn-detail {
+  padding: 8px 16px;
+  background-color: #8C6A4F;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-detail:hover:not(:disabled) {
+  background-color: #70543E;
+}
+
+.btn-detail:disabled {
+  background-color: #C2BDB5;
+  cursor: not-allowed;
+}
+
+/* UPGRADE */
+
+/* --- Pembungkus Konten Tengah --- */
+.facilities-content {
+  width: 100%;
+  max-width: 650px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* --- Kartu Ringkasan Kamar --- */
+.selected-room-card {
+  display: flex;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.04);
+  gap: 20px;
+  align-items: center;
+}
+
+.selected-room-img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.selected-room-info h3 {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  color: #222;
+}
+
+.selected-room-info .floor-text {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  color: #8C8473;
+}
+
+.selected-room-info .price-text {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.highlight-price {
+  color: #C06B3E;
+  font-weight: bold;
+}
+
+/* --- Daftar Fasilitas --- */
+.facilities-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.facility-item {
+  display: flex;
+  align-items: center;
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #EAE6DF;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.facility-item:hover {
+  border-color: #C06B3E;
+  box-shadow: 0px 4px 10px rgba(192, 107, 62, 0.08);
+}
+
+/* Kustomisasi Radio/Checkbox Bulat */
+.radio-wrapper {
+  margin-right: 20px;
+}
+
+.hidden-checkbox {
+  display: none; /* Sembunyikan input bawaan browser */
+}
+
+.custom-radio {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #A39B8B;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s;
+}
+
+/* Efek saat dicentang */
+.hidden-checkbox:checked + .custom-radio {
+  border-color: #C06B3E;
+}
+
+.hidden-checkbox:checked + .custom-radio::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background-color: #C06B3E;
+  border-radius: 50%;
+}
+
+.facility-info {
+  flex-grow: 1;
+}
+
+.facility-info h4 {
+  margin: 0 0 5px 0;
+  font-size: 15px;
+  color: #333;
+}
+
+.facility-info p {
+  margin: 0;
+  font-size: 13px;
+  color: #8C8473;
+}
+
+.facility-price {
+  font-weight: bold;
+  color: #C06B3E;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+/* --- Tombol Aksi Navigasi Baris --- */
+.action-buttons-row {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.btn-secondary {
+  padding: 15px 25px;
+  background-color: transparent;
+  color: #333;
+  border: 1px solid #D3CEC4;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: #F8F5F0;
+}
+
+.flex-grow {
+  flex-grow: 1;
+}
+/* --- Kartu Ringkasan Utama --- */
+.summary-main-card {
+  background: white;
+  width: 100%;
+  max-width: 650px;
+  border-radius: 12px;
+  overflow: hidden; /* Penting agar gambar mengikuti lengkungan border radius */
+  box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.04);
+  margin-bottom: 20px;
+}
+
+.summary-hero-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover; /* Memastikan gambar tidak gepeng, akan dipotong sesuai rasio */
+  display: block;
+}
+
+.summary-body {
+  padding: 25px 30px;
+}
+
+.summary-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.summary-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #222;
+  margin: 0 0 5px 0;
+}
+
+.summary-subtitle {
+  font-size: 13px;
+  color: #8C8473;
+  margin: 0;
+}
+
+/* --- Tags / Pills --- */
+.amenities-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+  margin-bottom: 25px;
+}
+
+.tag-pill {
+  background: #EAE6DF;
+  color: #555;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* --- List Informasi --- */
+.divider-thin {
+  border: none;
+  border-top: 1px solid #EAE6DF;
+  margin: 20px 0;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.info-label {
+  color: #8C8473;
+}
+
+.info-value {
+  color: #333;
+  font-weight: 600;
+}
+
+/* --- Kartu Rincian Harga --- */
+.price-card {
+  background: white;
+  width: 100%;
+  max-width: 650px;
+  border-radius: 12px;
+  padding: 25px 30px;
+  box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.04);
+  margin-bottom: 30px;
+}
+
+.price-section-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #8C8473;
+  letter-spacing: 1.5px;
+  margin-bottom: 20px;
+}
+
+.price-number {
+  color: #333;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums; /* Agar angka rata & sejajar */
+  font-family: var(--font-geist-mono), monospace; /* Memakai font mono jika ada untuk angka harga */
+}
+
+.price-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 16px;
+  font-weight: bold;
+  color: #222;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #EAE6DF;
+}
+
+.price-total-value {
+  color: #C06B3E;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-geist-mono), monospace;
+}
+
+/* --- Kotak Ringkasan Total Pembayaran --- */
+.total-payment-box {
+  background-color: #EAE6DF;
+  width: 100%;
+  max-width: 650px;
+  padding: 25px 40px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.total-label {
+  font-size: 14px;
+  color: #8C8473;
+  font-weight: 500;
+}
+
+.total-amount {
+  font-size: 24px;
+  font-weight: bold;
+  color: #C06B3E;
+  font-family: var(--font-geist-mono), monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Kustomisasi Input Form Pembayaran --- */
+.mt-20 {
+  margin-top: 20px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+/* Gaya khusus untuk input nomor kartu */
+.card-number-input {
+  letter-spacing: 2px;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 16px !important;
+}
+
+/* Wrapper untuk ikon dropdown (opsional) */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #E0DCD3;
+  border-radius: 8px;
+  font-size: 14px;
+  appearance: none; /* Menghilangkan panah bawaan browser */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238C8473' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C2.185 5.355 2.398 5 2.851 5h9.448c.453 0 .666.355.4 tip7.247 11.14z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+}
+
+.custom-select:focus {
+  border-color: #C06B3E;
+}
+
+/* --- Responsive adjustment --- */
+@media (max-width: 600px) {
+  .total-payment-box {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .total-amount {
+    font-size: 20px;
+  }
+}
+
+/* --- Halaman Pembayaran Gagal --- */
+.error-card {
+  background: white;
+  width: 100%;
+  max-width: 500px; /* Lebar sedikit lebih kecil dari form agar fokus */
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 15px 0px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 20px; /* Menggantikan jarak dari header title yang dihilangkan */
+}
+
+/* Lingkaran Ikon */
+.error-icon-wrapper {
+  width: 72px;
+  height: 72px;
+  background-color: #FFF0F0;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.error-icon {
+  width: 36px;
+  height: 36px;
+  color: #D32F2F; /* Merah bahaya */
+}
+
+/* Tipografi Error */
+.error-title {
+  font-family: serif;
+  font-size: 32px;
+  color: #D32F2F;
+  margin: 0 0 12px 0;
+}
+
+.error-subtitle {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0 0 30px 0;
+}
+
+/* Kotak Merah Pudar (Alasan Kegagalan) */
+.error-reasons-box {
+  background-color: #FFF5F5;
+  border: 1px solid #FFD6D6;
+  border-radius: 8px;
+  padding: 20px 25px;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+.error-reasons-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #D32F2F;
+  margin: 0 0 10px 0;
+}
+
+.error-reasons-list {
+  margin: 0;
+  padding-left: 20px; /* Jarak bullet list */
+  color: #D32F2F;
+  font-size: 13px;
+  line-height: 1.8; /* Dibuat agak renggang agar mudah dibaca */
+}
+
+/* Penyesuaian Tombol Tumpuk */
+.error-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* Mengubah flex direction tombol btn-secondary yang tadinya sejajar menjadi full */
+.error-actions .btn-secondary {
+  width: 100%;
+  background-color: white; /* Memastikan background putih murni */
+}
+
+/* --- Halaman Pembayaran Sukses --- */
+.success-card {
+  background: white;
+  width: 100%;
+  max-width: 550px;
+  padding: 50px 40px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 20px 0px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* Lingkaran Ikon Hijau */
+.success-icon-wrapper {
+  width: 80px;
+  height: 80px;
+  background-color: #E1F5E8; /* Hijau pudar */
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.success-icon {
+  width: 40px;
+  height: 40px;
+  color: #2D8A56; /* Hijau sukses */
+}
+
+/* Tipografi Sukses */
+.success-title {
+  font-family: serif;
+  font-size: 36px;
+  color: #2D8A56;
+  margin: 0 0 15px 0;
+}
+
+.success-subtitle {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0 0 40px 0;
+}
+
+/* Kotak Detail Ringkas */
+.booking-details-box {
+  width: 100%;
+  text-align: left;
+  border-top: 1px solid #EAE6DF;
+  border-bottom: 1px solid #EAE6DF;
+  padding: 30px 0;
+  margin-bottom: 30px;
+}
+
+.success-price {
+  color: #2D8A56;
+  font-weight: bold;
+  font-size: 18px;
+  font-family: var(--font-geist-mono), monospace;
+}
+
+/* Notifikasi Email di bawah */
+.email-notice {
+  font-size: 13px;
+  color: #8C8473;
+  margin: 0;
+}
+
+.email-notice strong {
+  color: #333;
+}
+
+/* Update Garis Progress Bar agar Hijau/Cokelat saat selesai */
+.line.completed {
+  background-color: #8C6A4F;
+}
+
+/* Animasi sederhana agar kartu muncul lebih smooth (opsional) */
+.success-card {
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
