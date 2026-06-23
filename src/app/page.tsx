@@ -1,52 +1,60 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function GuestDataPage() {
+  const router = useRouter();
+
+  // Inisialisasi "Big JSON" sejak awal (Blueprint untuk semua tabel)
   const [formData, setFormData] = useState({
+    // === TARGET TABEL: guests & bookings (Diisi di Langkah 1) ===
     fullName: '',
-    nik: '',
+    nikOrPassport: '',
     phoneNumber: '',
     email: '',
     checkInDate: '',
-    checkOutDate: ''
+    checkOutDate: '',
+
+    // === TARGET TABEL: bookings (Diisi di Langkah 2) ===
+    roomId: null,
+    roomName: '', // Hanya untuk tampilan UI, tidak masuk DB
+    basePrice: 0,
+
+    // === TARGET TABEL: booking_facilities (Diisi di Langkah 3) ===
+    facilities: [], // Akan berisi array fasilitas, misal: [{ facilityId: 1, quantity: 2 }]
+
+    // === TARGET TABEL: payments (Diisi di Langkah 5) ===
+    totalAmount: 0,
+    paymentMethod: '' // 'CASH', 'TRANSFER', atau 'QRIS'
   });
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
+    // Karena struktur kita flat (rata), handleChange ini tetap bisa dipakai
+    // untuk mengisi data fullName, nikOrPassport, dll secara otomatis.
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLanjutkan = async (e: any) => {
+  const handleLanjutkan = (e: any) => {
     e.preventDefault();
     
-    alert('Woi fungsi ini kepanggil bro! Proses nembak ke BE dimulai!');
-
-    try {
-      const response = await fetch('http://localhost:8081/api/guests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fullName: formData.fullName || 'Dummy Nama',
-          nik: formData.nik || '1234567890123456',
-          phoneNumber: formData.phoneNumber || '0812345678',
-          email: formData.email || 'dummy@gmail.com'
-        }),
-      });
-
-      if (response.ok) {
-        alert('Mantap bro! Data tamu berhasil masuk ke PostgreSQL!');
-        window.location.href = '/catalog';
-      } else {
-        alert('Backend menolak request!');
-      }
-    } catch (error) {
-      alert('Gagal konek ke backend port 8081! Tapi fungsi klik tombol lu udah sukses jalan!');
+    // Validasi sederhana
+    if (!formData.fullName || !formData.nikOrPassport || !formData.checkInDate || !formData.checkOutDate) {
+      alert("Mohon lengkapi data wajib (Nama, NIK, dan Tanggal)!");
+      return;
     }
+
+    // Simpan KESELURUHAN "Big Data" ke sessionStorage dengan kunci utama
+    sessionStorage.setItem('masterBookingData', JSON.stringify(formData));
+
+    // Pindah ke Step 2
+    router.push('/catalog'); 
   };
 
   return (
     <div className="page-container">
+      {/* --- PROGRESS BAR --- */}
       <div className="progress-container">
         <div className="step active"><div className="circle">1</div><span>Identitas</span></div>
         <div className="line"></div>
@@ -74,7 +82,7 @@ export default function GuestDataPage() {
             </div>
             <div className="input-group">
               <label>NIK / Kode Paspor</label>
-              <input type="text" name="nik" value={formData.nik} onChange={handleChange} placeholder="16 digit NIK atau nomor paspor" />
+              <input type="text" name="nikOrPassport" value={formData.nikOrPassport} onChange={handleChange} placeholder="16 digit NIK atau nomor paspor" />
             </div>
             <div className="input-group">
               <label>Nomor Telepon</label>
