@@ -3,29 +3,37 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-interface RoomType {
+// 1. Interface disesuaikan dengan struktur JSON 13 kamar
+interface PhysicalRoom {
   id: number;
-  name: string;
-  description: string;
-  basePrice: number;
-  floor?: number; 
+  roomNumber: string;
+  status: string;
+  roomType: {
+    id: number;
+    name: string;
+    description: string;
+    basePrice: number;
+  };
 }
 
 export default function RoomCatalogPage() {
   const router = useRouter();
   
-  const [rooms, setRooms] = useState<RoomType[]>([]);
+  const [rooms, setRooms] = useState<PhysicalRoom[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetch('/api/room-types'); 
+        // 2. Ubah endpoint untuk mengambil dari tabel 'rooms' (bukan room-types)
+        // Sesuaikan URL ini dengan endpoint Spring Boot kamu yang menghasilkan JSON 13 kamar tersebut
+        const response = await fetch('/api/rooms'); 
+        
         if (response.ok) {
           const data = await response.json();
           setRooms(data);
         } else {
-          console.error("Gagal mengambil data kamar dari backend.");
+          console.error("Gagal mengambil data kamar fisik dari backend.");
         }
       } catch (error) {
         console.error("Terjadi kesalahan jaringan:", error);
@@ -37,29 +45,23 @@ export default function RoomCatalogPage() {
     fetchRooms();
   }, []);
 
-  // --- INI ADALAH LOGIKA BARU UNTUK BIG JSON ---
-  const handlePilihKamar = (room: RoomType) => {
-    // 1. Ambil "Big JSON" yang sudah dibuat di Step 1
+  const handlePilihKamar = (room: PhysicalRoom) => {
     const savedData = sessionStorage.getItem('masterBookingData');
     
     if (savedData) {
-      // 2. Bongkar datanya (Ubah dari teks JSON menjadi Object)
       const masterData = JSON.parse(savedData);
       
-      // 3. Isi bagian data kamar yang masih kosong
+      // 3. Simpan ID kamar fisik (misal ID 7 untuk Kamar 201) agar Spring Boot tidak error
       masterData.roomId = room.id;
-      masterData.roomName = room.name; // Hanya untuk UI, tidak masuk DB
-      masterData.basePrice = room.basePrice;
+      masterData.roomName = `${room.roomType.name} (No. ${room.roomNumber})`; 
+      masterData.basePrice = room.roomType.basePrice;
       
-      // 4. Tutup dan timpa kembali data lamanya di brankas lokal
       sessionStorage.setItem('masterBookingData', JSON.stringify(masterData));
       
-      // 5. Lanjut ke Step 3 (Fasilitas)
-      router.push('/upgrade'); // Ubah '/upgrade' menjadi '/fasilitas' sesuai struktur foldermu
+      router.push('/upgrade'); 
     } else {
-      // Keamanan ekstra: Jika user iseng bypass URL langsung ke /catalog
       alert("Data tamu tidak ditemukan! Silakan isi identitas terlebih dahulu.");
-      router.push('/'); // Lempar balik ke Step 1
+      router.push('/'); 
     }
   };
 
@@ -67,53 +69,38 @@ export default function RoomCatalogPage() {
     <div className="page-container">
       {/* --- PROGRESS BAR SECTION --- */}
       <div className="progress-container">
-        <div className="step completed">
-          <div className="circle">✓</div>
-          <span>Identitas</span>
-        </div>
+        <div className="step completed"><div className="circle">✓</div><span>Identitas</span></div>
         <div className="line"></div>
-        <div className="step active">
-          <div className="circle">2</div>
-          <span>Pilih Kamar</span>
-        </div>
+        <div className="step active"><div className="circle">2</div><span>Pilih Kamar</span></div>
         <div className="line"></div>
-        <div className="step">
-          <div className="circle">3</div>
-          <span>Fasilitas</span>
-        </div>
+        <div className="step"><div className="circle">3</div><span>Fasilitas</span></div>
         <div className="line"></div>
-        <div className="step">
-          <div className="circle">4</div>
-          <span>Checkout</span>
-        </div>
+        <div className="step"><div className="circle">4</div><span>Checkout</span></div>
         <div className="line"></div>
-        <div className="step">
-          <div className="circle">5</div>
-          <span>Pembayaran</span>
-        </div>
+        <div className="step"><div className="circle">5</div><span>Pembayaran</span></div>
       </div>
 
-      {/* --- HEADER TITLE SECTION --- */}
       <div className="title-section">
         <p className="step-subtitle">LANGKAH 2 DARI 5</p>
         <h1 className="main-title">Katalog Kamar</h1>
-        <p className="desc-text">Pilih kamar yang sesuai dengan kebutuhan Anda</p>
+        <p className="desc-text">Pilih kamar spesifik yang sesuai dengan kebutuhan Anda</p>
       </div>
 
-      {/* --- ROOM GRID SECTION --- */}
       <div className="room-grid">
         {isLoading ? (
           <div style={{ textAlign: 'center', padding: '2rem', width: '100%' }}>
-            <h3>Memuat daftar kamar...</h3>
+            <h3>Memuat 13 daftar kamar...</h3>
           </div>
         ) : (
           rooms.map((room) => {
-            // Mengubah dummy status agar sinkron dengan bahasa Inggris di PostgreSQL kamu
-            let roomStatus = "AVAILABLE"; 
-            const roomTingkat = room.name ? room.name.split(' ')[0].toLowerCase() : "standard"; 
+            const actualStatus = room.status ? room.status.toUpperCase() : "AVAILABLE";
+            const isOccupied = actualStatus === "BOOKED" || actualStatus === "DIRTY";
             
-            // Pengecekan sekarang menggunakan "BOOKED"
-            const isOccupied = roomStatus === "BOOKED" || roomStatus === "DIRTY";
+            let badgeText = "Tersedia";
+            if (actualStatus === "BOOKED") badgeText = "Penuh";
+            if (actualStatus === "DIRTY") badgeText = "Kotor/Perbaikan";
+
+            const roomTingkat = room.roomType.name ? room.roomType.name.split(' ')[0].toLowerCase() : "standard"; 
             
             return (
               <div key={room.id} className={`room-card ${isOccupied ? 'occupied' : ''}`}>
@@ -123,28 +110,28 @@ export default function RoomCatalogPage() {
                   ) : (
                       <img 
                         src={`/kamar-${roomTingkat}.jpg`} 
-                        alt={room.name} 
+                        alt={room.roomType.name} 
                         className="room-image"
                         onError={(e) => { (e.target as HTMLImageElement).src = '/kamar-default.jpg'; }} 
                       />
                   )}
                   
-                  <span className="badge badge-type">{room.name.split(' ')[0]}</span>
+                  {/* Menampilkan Tipe Kamar dan Nomor Pintunya */}
+                  <span className="badge badge-type">Pintu {room.roomNumber}</span>
                   <span className={`badge badge-status ${isOccupied ? 'status-terisi' : 'status-tersedia'}`}>
-                    {roomStatus}
+                    {badgeText}
                   </span>
                 </div>
 
                 <div className="room-content">
-                  <h3 className="room-name">{room.name}</h3>
-                  <p className="room-floor">Lantai: {room.floor || "Menyesuaikan"}</p> 
-                  <p className="room-desc">{room.description}</p>
+                  <h3 className="room-name">{room.roomType.name}</h3>
+                  <p className="room-desc">{room.roomType.description}</p>
                   
                   <div className="room-footer">
                     <div className="price-container">
                       <span className="price-label">per malam</span>
                       <span className="price-value">
-                        Rp {new Intl.NumberFormat('id-ID').format(room.basePrice)}
+                        Rp {new Intl.NumberFormat('id-ID').format(room.roomType.basePrice)}
                       </span>
                     </div>
                     <button 
@@ -153,7 +140,7 @@ export default function RoomCatalogPage() {
                       onClick={() => handlePilihKamar(room)}
                       style={{ cursor: isOccupied ? 'not-allowed' : 'pointer' }}
                     >
-                      Pilih Kamar
+                      {isOccupied ? 'Tidak Tersedia' : 'Pilih Kamar Ini'}
                     </button>
                   </div>
                 </div>

@@ -6,49 +6,71 @@ import { useRouter } from 'next/navigation';
 export default function GuestDataPage() {
   const router = useRouter();
 
-  // Inisialisasi "Big JSON" sejak awal (Blueprint untuk semua tabel)
   const [formData, setFormData] = useState({
-    // === TARGET TABEL: guests & bookings (Diisi di Langkah 1) ===
     fullName: '',
     nikOrPassport: '',
     phoneNumber: '',
     email: '',
     checkInDate: '',
     checkOutDate: '',
-
-    // === TARGET TABEL: bookings (Diisi di Langkah 2) ===
     roomId: null,
-    roomName: '', // Hanya untuk tampilan UI, tidak masuk DB
+    roomName: '', 
     basePrice: 0,
-
-    // === TARGET TABEL: booking_facilities (Diisi di Langkah 3) ===
-    facilities: [], // Akan berisi array fasilitas, misal: [{ facilityId: 1, quantity: 2 }]
-
-    // === TARGET TABEL: payments (Diisi di Langkah 5) ===
+    facilities: [], 
     totalAmount: 0,
-    paymentMethod: '' // 'CASH', 'TRANSFER', atau 'QRIS'
+    paymentMethod: '' 
   });
+
+  // State tambahan untuk menampilkan tulisan "Mengecek email..." saat tombol ditekan
+  const [isChecking, setIsChecking] = useState(false);
 
   const handleChange = (e: any) => {
     const { name, value } = e.target;
-    // Karena struktur kita flat (rata), handleChange ini tetap bisa dipakai
-    // untuk mengisi data fullName, nikOrPassport, dll secara otomatis.
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleLanjutkan = (e: any) => {
+  const handleLanjutkan = async (e: any) => {
     e.preventDefault();
     
-    // Validasi sederhana
-    if (!formData.fullName || !formData.nikOrPassport || !formData.checkInDate || !formData.checkOutDate) {
-      alert("Mohon lengkapi data wajib (Nama, NIK, dan Tanggal)!");
+    // 1. Validasi sederhana (Cek kosong)
+    if (!formData.fullName || !formData.nikOrPassport || !formData.email || !formData.checkInDate || !formData.checkOutDate) {
+      alert("Mohon lengkapi semua data wajib!");
       return;
     }
 
-    // Simpan KESELURUHAN "Big Data" ke sessionStorage dengan kunci utama
+    setIsChecking(true); // Nyalakan efek loading
+
+    try {
+      // 2. Tarik data dari database melalui endpoint API
+      const response = await fetch('/api/guests');
+      
+      if (response.ok) {
+        const guests = await response.json();
+        
+        // 3. Cek apakah ada tamu dengan email yang sama persis
+        // Fungsi .some() akan mengembalikan nilai 'true' jika ada yang cocok
+        const isEmailTaken = guests.some((guest: any) => guest.email === formData.email);
+
+        if (isEmailTaken) {
+          alert("Email ini sudah terdaftar di sistem! Silakan gunakan email lain.");
+          setIsChecking(false);
+          return; // Hentikan proses, jangan lanjut ke step 2
+        }
+      } else {
+        console.warn("Gagal mengecek email ke server. Melanjutkan proses...");
+      }
+    } catch (error) {
+      console.error("Terjadi kesalahan jaringan saat mengecek email:", error);
+      // Opsional: Kamu bisa memilih untuk menghentikan user atau tetap membiarkan lewat 
+      // jika server sedang gangguan sementara.
+    }
+
+    setIsChecking(false); // Matikan efek loading
+
+    // 4. Jika email aman, simpan ke brankas lokal
     sessionStorage.setItem('masterBookingData', JSON.stringify(formData));
 
-    // Pindah ke Step 2
+    // 5. Lanjut ke halaman berikutnya
     router.push('/catalog'); 
   };
 
@@ -109,8 +131,8 @@ export default function GuestDataPage() {
           </div>
 
           <div className="action-container" style={{ marginTop: '2rem' }}>
-            <button type="submit" className="btn-primary" style={{ cursor: 'pointer', width: '100%' }}>
-              Lanjutkan ke Pilih Kamar &gt;
+            <button type="submit" className="btn-primary" disabled={isChecking} style={{ cursor: isChecking ? 'not-allowed' : 'pointer', width: '100%', opacity: isChecking ? 0.7 : 1 }}>
+              {isChecking ? 'Mengecek Data...' : 'Lanjutkan ke Pilih Kamar >'}
             </button>
           </div>
         </form>

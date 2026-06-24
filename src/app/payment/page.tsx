@@ -35,7 +35,7 @@ export default function PaymentPage() {
     // 4. Logika Percabangan (Simulasi Gacha / Randomizer)
     // Karena kamu ingin ada skenario Sukses / Gagal, kita bisa membuat simulasi probabilitas.
     // Misal: 80% peluang sukses, 20% peluang gagal (seperti gacha drop rate).
-    const isSuccess = Math.random() > 0.100; 
+    const isSuccess = false; 
 
     if (isSuccess) {
       // Lempar ke halaman sukses

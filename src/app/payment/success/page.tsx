@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function PaymentSuccessPage() {
@@ -11,7 +11,11 @@ export default function PaymentSuccessPage() {
   // State untuk mengontrol tulisan "Sedang menyimpan..."
   const [isSavingToDB, setIsSavingToDB] = useState<boolean>(true);
 
+  const hasFetched = useRef(false);
+
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     const savedData = sessionStorage.getItem('masterBookingData');
     
     if (savedData) {
